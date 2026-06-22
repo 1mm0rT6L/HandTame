@@ -55,7 +55,7 @@ class PassiveRecon:
         self.vt_api_key = config.get("vt_api_key")
         self.whoisjson_api_key = config.get("whoisjson_api_key")
         self.otx_api_key = config.get("otx_api_key")
-        self.bultiwith_api_key = config.get("bultiwith_api_key ")
+        self.builtwith_api_key = config.get("builtwith_api_key ")
     
     """Malware detection"""
     def malicious_link_checker(self):

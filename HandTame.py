@@ -502,6 +502,7 @@ class ActiveRecon:
         self.max_workers = max_workers
         self.results = {}
     
+    """"Scaning"""
     def nmap_scaning(self):
         results = {"os_detection": {}, "nse_vuln": {}, "custom_nse_vuln": {}}
         
@@ -571,6 +572,7 @@ class ActiveRecon:
         
         self.results["nmap_results"] = results
     
+    """Directory detection"""
     def directory_detection(self):    
         tools_available = {"dirb": False, "gobuster": False}
         
@@ -686,6 +688,7 @@ class ActiveRecon:
         
         self.results["directories"] = final_results
     
+    """Subdomain detection(active)"""
     def active_subdomain_finder(self):        
         results = {
             "subfinder_passive": [], "subfinder_active": [], "chaos": [],
@@ -879,6 +882,7 @@ class ActiveRecon:
         
         self.results["active_subdomains"] = results
     
+    """Technology detection(active)"""
     def active_technology_detection(self):
         all_tech = {}
         try:
@@ -911,6 +915,7 @@ class ActiveRecon:
         
         self.results["technology"] = all_tech
     
+    """Endpoint detection(active)"""
     def active_endpoint_discovery(self):      
         all_endpoints = set()
         subdomains = self.results.get("active_subdomains", {}).get("all_subdomains", [])[:100]

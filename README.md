@@ -14,3 +14,10 @@ DISCORD_WEBHOOK=https://discord.com/api/webhooks/your_webhook_id/your_webhook_to
 TELEGRAM_BOT_TOKEN=1234567890:ABCdefGHIjklMNOpqrsTUVwxyz
 TELEGRAM_CHAT_ID=-123456789
 ```
+At least,
+```
+git clone https://github.com/1mm0rT6L/HandTame.git && cd HandTame
+python -m venv venv && source venv/bin/activate
+pip install colorama dnspython googlesearch-python python-dotenv requests python-nmap
+python HandTame.py
+```

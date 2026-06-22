@@ -21,3 +21,4 @@ python -m venv venv && source venv/bin/activate
 pip install colorama dnspython googlesearch-python python-dotenv requests python-nmap
 python HandTame.py
 ```
+& In this question ```Use custom NSE script?``` say n if u did not add ur lua script.

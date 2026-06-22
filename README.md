@@ -1,4 +1,4 @@
-# HandTame
+#  Automated Recon
 OK, let me explain.
 This code has two classes named Passive & Active Recon, as u can see.
 The options have been commented in the source code.

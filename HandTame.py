@@ -195,6 +195,7 @@ class PassiveRecon:
             try:
                 for url in search(q, num_results=10, advanced=True, timeout=5):
                     all_dork_results.append(url)
+                    time.sleep(5)
             except Exception as e:
                 logger.error(f"Error in dork for query '{q}': {e}")
             continue
@@ -437,55 +438,98 @@ class PassiveRecon:
     def origin_ip_detection(self):
         ips = set()
         
-        # Get A records
+        # Get A record
         try:
             answers = dns.resolver.resolve(self.target, 'A')
             for answer in answers:
                 ips.add(str(answer))
         except Exception as e:
-            logger.error(f"Error in origin_ip_detection with A records: {e}")
-        
-        # Get MX records
+            logger.eror(f"Error in origin_ip_detection with A records: {e}")
+
+
         try:
-            answers = dns.resolver.resolve(self.target, 'MX')
+            answers= dns.resolver.resolve(self.target, 'MX')
             for answer in answers:
                 mx_host = str(answer.exchange).rstrip('.')
-                try:
-                    mx_ips = dns.resolver.resolve(mx_host, 'A')
-                    for ip in mx_ips:
-                        ips.add(str(ip))
-                except Exception as e:
-                    logger.error(f"Error in origin_ip_detection with MX records: {e}")
+            try:
+                mx_ips = dns.resolver.resolve(mx_host,'A')
+                for ip in mx_ips:
+                    ips.add(str(ip))
+            except Exception as e:
+                logger.error(f"Error in origin_ip_detection with MX records")
         except Exception as e:
             logger.error(f"Error in origin_ip_detection with MX records: {e}")
+
         
-        # Check CDN
         cdn = set()
-        origin_ip = set()
-        
+        orgin_ips = set()
+
         for ip in ips:
             is_cdn = False
-            # Cloudflare ranges
-            if ip.startswith('104.16.') or ip.startswith('104.17.') or ip.startswith('172.64.'):
+
+            # Cloudflare
+            if ip.startswith('104.16.') or ip.startswith('104.17.') or ip.startswith('172.64.') or \
+                ip.startswith('141.101.') or ip.startswith('188.114.') or ip.startswith('190.93.') or \
+                ip.startswith('197.234.') or ip.startswith('198.41.') or ip.startswith('162.158.'):
                 cdn.add("Cloudflare")
                 is_cdn = True
-            # Cloudfront ranges
-            elif ip.startswith('13.32.') or ip.startswith('13.33.') or ip.startswith('13.34.'):
+        
+            # Cloudfront
+            elif ip.startswith('13.32.') or ip.startswith('13.33.') or ip.startswith('13.34.') or \
+                ip.startswith('52.222.') or ip.startswith('54.192.') or ip.startswith('54.230.') or \
+                ip.startswith('54.239.') or ip.startswith('54.240.'):
                 cdn.add("Cloudfront")
                 is_cdn = True
-            # Fastly ranges
+        
+            # Fastly
             elif ip.startswith('151.101.'):
                 cdn.add("Fastly")
                 is_cdn = True
-            else:
-                if is_cdn == False:
-                    origin_ip.add(ip)
         
-        self.results["origin_ip"] = {
-        "ip": origin_ip,
-        "cdn": cdn,
-        "all_ips": list(ips)
-         }
+            # Akamai
+            elif ip.startswith('23.32.') or ip.startswith('23.64.') or ip.startswith('23.68.') or \
+                ip.startswith('23.72.') or ip.startswith('23.80.') or ip.startswith('23.96.') or \
+                ip.startswith('23.100.') or ip.startswith('23.104.'):
+                cdn.add("Akamai")
+                is_cdn = True
+        
+            # Google Cloud CDN
+            elif ip.startswith('35.190.') or ip.startswith('35.191.') or ip.startswith('35.192.') or \
+                ip.startswith('35.193.') or ip.startswith('35.194.') or ip.startswith('35.195.') or \
+                ip.startswith('35.196.') or ip.startswith('35.197.') or ip.startswith('35.198.') or \
+                ip.startswith('35.199.'):
+                cdn.add("Google Cloud CDN")
+                is_cdn = True
+        
+            # Azure CDN
+            elif ip.startswith('13.107.') or ip.startswith('23.96.') or ip.startswith('23.100.') or \
+               ip.startswith('23.104.') or ip.startswith('23.108.'):
+               cdn.add("Azure CDN")
+               is_cdn = True
+        
+            # Incapsula
+            elif ip.startswith('199.83.128.') or ip.startswith('198.143.32.') or ip.startswith('149.126.72.') or \
+                ip.startswith('103.28.248.') or ip.startswith('45.60.') or ip.startswith('172.111.64.'):
+                cdn.add("Incapsula")
+                is_cdn = True
+        
+            # Sucuri
+            elif ip.startswith('192.124.249.') or ip.startswith('192.124.250.') or ip.startswith('192.124.251.') or \
+                ip.startswith('192.124.252.') or ip.startswith('192.124.253.') or ip.startswith('192.124.254.'):
+                cdn.add("Sucuri")
+                is_cdn = True
+
+
+            else:
+                if not is_cdn:
+                    orgin_ips.add(ip)
+
+            
+            self.results["orgin_ip"] = {
+                "ip" : list(orgin_ips) if orgin_ips else [],
+                "cdn" : list(cdn) if cdn else [],
+                "all_ips" : list(ips)
+            }
         
         return self.results
 
